@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user').User;
-const Sequelize = require('sequelize');
+const User = require('./models/user').User;
+const Course = require('./models/course').Course;
+//const Sequelize = require('sequelize');
 
 const { check, validationResult } = require('express-validator/check');
 const bcryptjs = require('bcryptjs');
@@ -51,13 +52,15 @@ const authenticateUser = (req, res, next) => {
 };
   
 //GET /api/users 200 - Returns the currently authenticated user
-router.get('/',  authenticateUser, (req, res) => {
+router.get('/users',  authenticateUser, (req, res, next) => {
     const user = req.currentUser;
 
     res.json({
         firstName: user.firstName,
         lastName: user.lastName,
     });
+
+    next();
 });
 
 //POST /api/users 201 - Creates a user, sets the Location header to "/", and returns no content
@@ -98,6 +101,59 @@ router.post('/users', [
   
     // Set the status to 201 Created and end the response.
     return res.status(201).end();
+
   });
   
-  module.exports = router;
+
+// GET /api/courses 200 - Returns a list of courses (including the user that owns each course)
+router.get('/courses', async (req, res, next) => {
+    const courses = await Course.findAll();
+    res.json(courses);
+    next();
+});
+
+// GET /api/courses/:id 200 - Returns a the course (including the user that owns the course) for the provided course ID
+router.get('/courses/:id', async(req, res, next) => {
+    const course = await Course.findByPk(req.params.id);
+    res.json(course);
+    next();
+});
+
+// POST /api/courses 201 - Creates a course, sets the Location header to the URI for the course, and returns no content
+router.post('/courses', [
+  check('title')
+    .exists({ checkNull: true, checkFalsy: true })
+    .withMessage('Please provide a value for "title"'),
+  check('description')
+    .exists({checkNull: true, checkFalsy: true})
+    .withMessage('Please provide a value for "description"')
+], authenticateUser, async(req,res, next) => {
+  const course = await Course.create(req.body);
+  res.status(201).end();
+  next();
+});
+
+// PUT /api/courses/:id 204 - Updates a course and returns no content
+router.put('/courses/:id', [
+  check('title')
+    .exists({ checkNull: true, checkFalsy: true })
+    .withMessage('Please provide a value for "title"'),
+  check('description')
+    .exists({checkNull: true, checkFalsy: true})
+    .withMessage('Please provide a value for "description"')
+], authenticateUser, async(req, res, next) => {
+  const course = await Course.findByPk(req.params.id);
+  await course.update(req.body);
+  res.status(204).end();
+  next();
+});
+
+// DELETE /api/courses/:id 204 - Deletes a course and returns no content
+router.delete('/courses/:id', authenticateUser, async(req, res, next) => {
+  const course = await Course.findByPk(req.params.id);
+  await course.delete(req.body);
+  res.status(204).end();
+  next();
+})
+
+module.exports = router;
