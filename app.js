@@ -4,6 +4,26 @@
 const express = require('express');
 const morgan = require('morgan');
 const routes = require('./routes');
+const sequelize = require('./models').sequelize; // import Sequelize
+
+// (async () => {
+//   try {
+//     // test the connection to the database
+//     console.log('Connection to the database successful!');
+//     await sequelize.authenticate();
+
+//     // sync the models
+//     console.log('Synchronizing the models with the database...');
+//     await sequelize.sync({ force: true });
+//   } catch(error) {
+//     if (error.name === 'SequelizeValidationError') {
+//       const errors = error.errors.map(err => err.message);
+//       console.error('Validation errors: ', errors);
+//     } else {
+//       throw error;
+//     }
+//   }
+// })();
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
@@ -50,6 +70,9 @@ app.use((err, req, res, next) => {
 app.set('port', process.env.PORT || 5000);
 
 // start listening on our port
-const server = app.listen(app.get('port'), () => {
-  console.log(`Express server is listening on port ${server.address().port}`);
+sequelize.sync().then(() => {
+  const server = app.listen(app.get('port'), () => {
+    console.log(`Express server is listening on port ${server.address().port}`);
+  });
 });
+

@@ -1,15 +1,8 @@
 const Sequelize = require('sequelize');
 
-// Course
-// id (Integer, primary key, auto-generated)
-// userId (id from the Users table)
-// title (String)
-// description (Text)
-// estimatedTime (String, nullable)
-// materialsNeeded (String, nullable)
 
 module.exports = (sequelize) => {
-    class Course extends sequelize.module{};
+    class Course extends Sequelize.Model{};
     Course.init({
         id: {
             type: Sequelize.INTEGER,
@@ -50,14 +43,16 @@ module.exports = (sequelize) => {
         }
     }, { sequelize })
 
-    Course.belongsTo(models.User, {
-        //as:'',
-        foreighKey: {
-            fieldName: 'userID',
-            field: 'userID',
-            allowNull: false,
-        },
-    });
-
+    Course.associate = (models) => {
+        Course.belongsTo(models.User, {
+            //as:'',
+            foreighKey: {
+                fieldName: 'userID',
+                field: 'userID',
+                allowNull: false,
+            },
+        });
+    };
+  
     return Course;
 }
