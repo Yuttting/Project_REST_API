@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require('./models/user').User;
 const Course = require('./models/course').Course;
 const Sequelize = require('sequelize');
-//const Sequelize = require('sequelize');
 
 const { check, validationResult } = require('express-validator');
 const bcryptjs = require('bcryptjs');
