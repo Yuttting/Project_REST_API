@@ -7,8 +7,7 @@ const routes = require('./routes');
 
 
 // import Sequelize
-const { sequelize, models } = require('./models');
-// const { User, Course } = models;
+const { sequelize } = require('./models');
 
 (async () => {
   try {
@@ -18,7 +17,7 @@ const { sequelize, models } = require('./models');
 
     // sync the models
     console.log('Synchronizing the models with the database...');
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
   } catch(error) {
     if (error.name === 'SequelizeValidationError') {
       const errors = error.errors.map(err => err.message);

@@ -35,6 +35,8 @@ module.exports = (sequelize) => {
         emailAddress: {
             type:Sequelize.STRING,
             allowNull: false,
+            isEmail: true,
+            unique: true,
             validate: {
                 notNull: {
                     msg: 'Please provide an email address.'
@@ -60,10 +62,10 @@ module.exports = (sequelize) => {
 
     User.associate = (models) => {
         User.hasMany(models.Course), {
-            //as:'',
+            //as: 'owner',
             foreignKey: {
-                fieldName: 'userID',
-                field: 'userID',
+                fieldName: 'userId',
+                field: 'userId',
                 allowNull: false,
             }
         }

@@ -40,17 +40,23 @@ module.exports = (sequelize) => {
         materialsNeeded: {
             type: Sequelize.STRING,
             allowNull: true
-        }
+        },
+        userId: {
+            type: Sequelize.INTEGER,
+            model: 'User', // table name
+            key: 'id' // the column name
+        },
     }, { sequelize })
 
     Course.associate = (models) => {
         Course.belongsTo(models.User, {
-            //as:'',
+            //as: 'owner',
             foreighKey: {
-                fieldName: 'userID',
-                field: 'userID',
+                fieldName: 'userId',
+                field: 'userId',
                 allowNull: false,
             },
+            onDelete: 'cascade',
         });
     };
   
