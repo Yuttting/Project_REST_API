@@ -63,10 +63,13 @@ app.use((err, req, res, next) => {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
 
+  if (err.message == 'User already exists.') {
+    res.status(400).json({message: err.message});
+  } else (
   res.status(err.status || 500).json({
     message: err.message,
     error: {},
-  });
+  }))
 });
 
 // set our port

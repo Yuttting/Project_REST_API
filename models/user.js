@@ -36,14 +36,17 @@ module.exports = (sequelize) => {
             type:Sequelize.STRING,
             allowNull: false,
             isEmail: true,
-            unique: true,
+            unique: {
+                args: true,
+                msg: 'User already exists.'
+            },
             validate: {
                 notNull: {
                     msg: 'Please provide an email address.'
                 },
                 notEmpty: {
                     msg: 'Email address is required.'
-                }
+                },
             }
         },
         password: {

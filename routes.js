@@ -92,7 +92,9 @@ router.post('/users', [
         .withMessage('Please provide a value for "lastName"'),
     check('emailAddress')
         .exists({ checkNull: true, checkFalsy: true })
-        .withMessage('Please provide a value for "emailAddress"'),
+        .withMessage('Please provide a value for "emailAddress"')
+        .isEmail()
+        .withMessage('Please provide a valid "emailAddress"'),
     check('password')
         .exists({ checkNull: true, checkFalsy: true })
         .withMessage('Please provide a value for "password"'),
@@ -117,10 +119,9 @@ router.post('/users', [
   
     // Add the user to the `users` database.
     user = await User.create(user);
-  
+     
     // Set the status to 201 Created and end the response.
-    return res.status(201).end();
-
+    return res.status(201).location('/').end();
   }));
   
 
@@ -169,7 +170,8 @@ router.post('/courses', [
     .withMessage('Please provide a value for "description"')
 ], authenticateUser, asyncHandler(async(req,res) => {
   const course = await Course.create(req.body);
-  res.status(201).end();
+  const id = course.id;
+  res.status(201).location(`/courses/${id}`).end();
 }));
 
 // PUT /api/courses/:id 204 - Updates a course and returns no content
